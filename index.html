@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- ====== 沉浸式 APP 体验 (华为/鸿蒙终极适配版) ====== -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="好好的日子">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FFFBF0">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="browsermode" content="application">
+    <meta name="x5-page-mode" content="app">
+    <!-- 采用 URL 严格编码的 Manifest，确保华为浏览器能够准确识别独立全屏模式 -->
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%E5%A5%BD%E5%A5%BD%E7%9A%84%E6%97%A5%E5%AD%90%22%2C%22short_name%22%3A%22%E5%A5%BD%E5%A5%BD%E7%9A%84%E6%97%A5%E5%AD%90%22%2C%22display%22%3A%22fullscreen%22%2C%22start_url%22%3A%22.%22%2C%22background_color%22%3A%22%23FFFBF0%22%2C%22theme_color%22%3A%22%23FFFBF0%22%7D">
+    
+    <title>好好的日子 - 治愈绘本终极版</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { theme: { yellow: '#FFFBF0', pink: '#FFE4E6', mint: '#D1FAE5', ink: '#4B5563', red: '#FDA4AF', blue: '#DBEAFE', purple: '#E9D5FF' } }, fontFamily: { title: ['"ZCOOL KuaiLe"', 'cursive'], body: ['"ZCOOL QingKe HuangYou"', 'sans-serif'] }, boxShadow: { 'soft': '0 6px 20px rgba(253,164,175,0.15)' } } }
+        }
+    </script>
+
+    <style>
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        ::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        
+        body { margin: 0; padding: 0; background-color: #FFFBF0; color: #4B5563; font-family: 'ZCOOL QingKe HuangYou', sans-serif; overflow-x: hidden; }
+        h1, h2, h3, .font-title { font-family: 'ZCOOL KuaiLe', cursive; }
+
+        .bg-dream { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background: linear-gradient(180deg, #FFFDF8 0%, #FFE4E6 100%); }
+        .bg-dream::after { content: ''; position: absolute; inset: 0; background-image: radial-gradient(#FDA4AF 1.5px, transparent 1.5px); background-size: 35px 35px; opacity: 0.12; }
+        .bg-element { position: absolute; opacity: 0.8; }
+        .bg-star1 { top: 18%; left: 15%; width: 25px; animation: twinkle 3s ease-in-out infinite alternate; }
+        .bg-star2 { top: 60%; right: 12%; width: 22px; animation: twinkle 4s ease-in-out infinite alternate 1s; }
+        .bg-star3 { top: 80%; left: 8%; width: 16px; animation: twinkle 2.5s ease-in-out infinite alternate 0.5s; }
+        .fish-wrap { position: absolute; top: 68%; left: -200px; animation: swimPath 28s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .koi-fish { width: 130px; animation: fishFloat 3s ease-in-out infinite alternate; filter: drop-shadow(0px 8px 12px rgba(253,164,175,0.5)); }
+        .dream-bubble { position: absolute; opacity: 0; animation: floatUp 4s ease-in infinite; }
+        .db1 { width: 16px; height: 16px; left: 115px; top: 30px; animation-delay: 0.2s; }
+        .db2 { width: 24px; height: 24px; left: 135px; top: 15px; animation-delay: 1.5s; }
+        .db3 { width: 14px; height: 14px; left: 120px; top: 40px; animation-delay: 2.8s; }
+
+        @keyframes swimPath { 0% { transform: translate(-200px, 0) rotate(5deg); } 48% { transform: translate(110vw, -80px) rotate(-5deg); } 50% { transform: translate(110vw, -80px) scaleX(-1) rotate(-5deg); } 98% { transform: translate(-200px, 50px) scaleX(-1) rotate(5deg); } 100% { transform: translate(-200px, 50px) rotate(5deg); } }
+        @keyframes fishFloat { 0% { transform: rotate(-5deg) translateY(-6px); } 100% { transform: rotate(5deg) translateY(6px); } }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 30% { opacity: 1; transform: translateY(-30px) scale(1.1); } 100% { transform: translateY(-200px) scale(1.5) translateX(-25px); opacity: 0; } }
+        @keyframes twinkle { 0% { transform: scale(0.8); opacity: 0.4; } 100% { transform: scale(1.2); opacity: 0.9; } }
+
+        .cloud-title-container { position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 15px 35px; margin-top: 15px; white-space: nowrap; max-width: 100%; }
+        .cloud-bg { position: absolute; inset: 0; filter: drop-shadow(0px 6px 0px #FDA4AF); animation: cloudBob 4s ease-in-out infinite alternate; z-index: -1; }
+        .hero-title { font-size: 2.2rem; font-weight: 900; color: #4B5563; letter-spacing: 2px; transform: rotate(-2deg); text-shadow: 2px 2px 0px #fff, -2px -2px 0px #fff, 0px 4px 0px #FDE047; white-space: nowrap; }
+        .title-sun { position: absolute; top: -5px; left: 0px; width: 45px; animation: slowSpin 15s linear infinite; z-index: 10; }
+        .title-moon { position: absolute; bottom: -5px; right: 0px; width: 40px; animation: moonRock 5s ease-in-out infinite alternate; z-index: 10; }
+        
+        @keyframes cloudBob { 0% { transform: translateY(-3px); } 100% { transform: translateY(3px); } }
+        @keyframes slowSpin { 100% { transform: rotate(360deg); } }
+        @keyframes moonRock { 0% { transform: rotate(-12deg); } 100% { transform: rotate(12deg); } }
+
+        .card-soft { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 28px; box-shadow: 0 8px 25px rgba(253,164,175,0.2); border: 2px solid white; max-width: 100%; overflow: hidden; }
+        .btn-cute { border: 2px solid #FDA4AF; box-shadow: 0 4px 10px rgba(253,164,175,0.25); transition: all 0.15s; border-radius: 18px; font-weight: bold; background: white; color: #4B5563; }
+        .btn-cute:active { transform: translateY(3px); box-shadow: 0 0 0 rgba(253,164,175,0); }
+        .btn-cute.selected { background-color: #FFE4E6; border: 2px solid #F43F5E; color: #E11D48; }
+
+        .calendar-cell { height: 98px; padding: 4px; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.8); border-radius: 20px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(253,164,175,0.1); position: relative; }
+        .calendar-cell.today { background: rgba(253, 164, 175, 0.25); box-shadow: 0 0 0 3px #FDA4AF inset; }
+        .date-num { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; font-weight: 900; border-radius: 50%; z-index: 2; flex-shrink: 0; font-family: 'ZCOOL KuaiLe', cursive; }
+        .date-num.has-period { background-color: white; color: #E11D48; border: 3px solid #FDA4AF; box-shadow: 0 4px 8px rgba(253,164,175,0.4); }
+        .icon-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; width: 100%; height: 35px; align-content: flex-start; overflow: hidden; margin-top: 1px; }
+        .sport-pill { position: absolute; bottom: 3px; left: 50%; width: 105%; margin-left: -52.5%; transform: scale(0.9); transform-origin: bottom center; background: white; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2px 2px 1px 2px; font-weight: 900; color: #4B5563; box-shadow: 0 2px 6px rgba(253,164,175,0.4); border: 1.5px solid #FDA4AF; z-index: 10; white-space: nowrap; }
+
+        .nav-btn svg { transition: all 0.3s; }
+        .nav-btn.active { color: #F43F5E; }
+        .nav-btn.active svg { animation: ultraJelly 1.5s infinite; transform-origin: bottom center; filter: drop-shadow(0px 6px 4px rgba(244,63,94,0.3)); }
+        @keyframes ultraJelly { 0%, 100% { transform: scale(1, 1) translateY(0); } 15% { transform: scale(1.3, 0.7) translateY(4px); } 35% { transform: scale(0.7, 1.3) translateY(-14px); } 55% { transform: scale(1.1, 0.9) translateY(0); } 75% { transform: scale(0.95, 1.05) translateY(-3px); } }
+
+        .privacy-blur { filter: blur(12px); transition: filter 0.3s ease; cursor: pointer; }
+        .privacy-blur.revealed { filter: blur(0px); }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 32px; width: 32px; background: #fff; border: 4px solid #FDA4AF; border-radius: 50%; box-shadow: 0 4px 8px rgba(253,164,175,0.4); margin-top: -12px; cursor: pointer; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 10px; background: #FFE4E6; border-radius: 10px; }
+        .tab-content { display: none; padding-bottom: 120px; animation: fadeIn 0.4s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-safe-area { padding-bottom: calc(env(safe-area-inset-bottom) + 16px); }
+
+        @keyframes fallConfetti { 0% { transform: translateY(-10vh) rotate(0deg) scale(0.8); opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg) scale(1.2); opacity: 0; } }
+        .confetti-flake { position: absolute; top: -20px; animation: fallConfetti linear forwards; pointer-events: none; z-index: 9999; filter: drop-shadow(0px 4px 6px rgba(253,164,175,0.6)); }
+    </style>
+</head>
+<body class="antialiased relative min-h-screen">
+
+    <div class="bg-dream">
+        <svg class="bg-element bg-star1" viewBox="0 0 100 100"><path d="M50 5 Q50 50 5 50 Q50 50 50 95 Q50 50 95 50 Q50 50 50 5 Z" fill="#FDE047" stroke="#FBBF24" stroke-width="4"/></svg>
+        <svg class="bg-element bg-star2" viewBox="0 0 100 100"><path d="M50 5 Q50 50 5 50 Q50 50 50 95 Q50 50 95 50 Q50 50 50 5 Z" fill="#FDA4AF" stroke="#F43F5E" stroke-width="3"/></svg>
+        <svg class="bg-element bg-star3" viewBox="0 0 100 100"><path d="M50 5 Q50 50 5 50 Q50 50 50 95 Q50 50 95 50 Q50 50 50 5 Z" fill="#6EE7B7" stroke="#34D399" stroke-width="3"/></svg>
+
+        <div class="fish-wrap">
+            <svg class="koi-fish" viewBox="0 0 100 80">
+                <path d="M 30 40 C 5 5, -10 35, 20 40 C -10 45, 5 75, 30 40 Z" fill="#FCA5A5" />
+                <path d="M 35 40 C 15 20, 0 35, 25 40 C 0 45, 15 60, 35 40 Z" fill="#FDA4AF" opacity="0.8"/>
+                <circle cx="55" cy="40" r="26" fill="#FFF1F2" stroke="#FDA4AF" stroke-width="3"/>
+                <path d="M 55 14 C 65 2, 75 10, 65 25 Z" fill="#FFE4E6" stroke="#FDA4AF" stroke-width="2"/>
+                <path d="M 50 63 C 40 75, 65 80, 65 62 Z" fill="#FFE4E6" stroke="#FDA4AF" stroke-width="2"/>
+                <path d="M 68 32 Q 73 25 78 32" fill="none" stroke="#BE123C" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="82" cy="39" r="4.5" fill="#FDA4AF" opacity="0.8"/>
+                <circle cx="84" cy="38" r="2" fill="none" stroke="#F43F5E" stroke-width="2"/>
+            </svg>
+            <svg class="dream-bubble db1" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="rgba(255,255,255,0.8)" stroke="#FDA4AF" stroke-width="2.5"/><circle cx="6" cy="6" r="2" fill="white"/></svg>
+            <svg class="dream-bubble db2" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="rgba(255,255,255,0.8)" stroke="#FDA4AF" stroke-width="2.5"/><circle cx="6" cy="6" r="2" fill="white"/></svg>
+            <svg class="dream-bubble db3" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="rgba(255,255,255,0.8)" stroke="#FDA4AF" stroke-width="2.5"/><circle cx="6" cy="6" r="2" fill="white"/></svg>
+        </div>
+    </div>
+
+    <!-- SVG 图标库 -->
+    <svg style="display: none;">
+        <defs>
+            <symbol id="icon-sun-smile" viewBox="0 0 100 100"><g stroke="#FBBF24" stroke-width="7" stroke-linecap="round"><line x1="50" y1="8" x2="50" y2="16"/> <line x1="50" y1="84" x2="50" y2="92"/><line x1="8" y1="50" x2="16" y2="50"/> <line x1="84" y1="50" x2="92" y2="50"/><line x1="20" y1="20" x2="26" y2="26"/> <line x1="80" y1="80" x2="74" y2="74"/><line x1="20" y1="80" x2="26" y2="74"/> <line x1="80" y1="20" x2="74" y2="26"/></g><circle cx="50" cy="50" r="23" fill="#FDE047" stroke="#FBBF24" stroke-width="4"/><circle cx="41" cy="46" r="3.5" fill="#92400E"/> <circle cx="59" cy="46" r="3.5" fill="#92400E"/><path d="M46 54 Q50 59 54 54" fill="none" stroke="#92400E" stroke-width="3" stroke-linecap="round"/><ellipse cx="34" cy="51" rx="4" ry="2.5" fill="#FCA5A5" opacity="0.8"/><ellipse cx="66" cy="51" rx="4" ry="2.5" fill="#FCA5A5" opacity="0.8"/></symbol>
+            <symbol id="icon-moon-smile" viewBox="0 0 100 100"><path d="M60 10 A 40 40 0 1 0 90 60 A 30 30 0 0 1 60 10 Z" fill="#E9D5FF" stroke="#C084FC" stroke-width="4" stroke-linejoin="round"/><path d="M40 45 Q45 50 50 45 M35 55 Q40 60 45 55" fill="none" stroke="#6B21A8" stroke-width="3" stroke-linecap="round"/><circle cx="35" cy="48" r="3" fill="#F87171" opacity="0.5"/></symbol>
+
+            <!-- 导航图标 -->
+            <symbol id="icon-cal" viewBox="0 0 100 100"><rect x="15" y="20" width="70" height="65" rx="18" fill="white" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><path d="M30 10 V30 M70 10 V30 M15 45 H85" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/><circle cx="35" cy="65" r="4" fill="currentColor"/><circle cx="65" cy="65" r="4" fill="currentColor"/><path d="M45 70 Q50 78 55 70" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></symbol>
+            <symbol id="icon-ovu" viewBox="0 0 100 100"><path d="M50 90 C15 90 20 35 50 10 C80 35 85 90 50 90 Z" fill="white" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><circle cx="35" cy="60" r="4" fill="currentColor"/><circle cx="65" cy="60" r="4" fill="currentColor"/><path d="M45 65 Q50 73 55 65" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M50 10 Q30 -10 20 10" fill="none" stroke="#10B981" stroke-width="6" stroke-linecap="round"/></symbol>
+            <symbol id="icon-health" viewBox="0 0 100 100"><path d="M20 40 L50 15 L80 40 V85 H20 Z" fill="white" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><path d="M50 15 L50 40" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="35" cy="65" r="4" fill="currentColor"/><circle cx="65" cy="65" r="4" fill="currentColor"/><path d="M45 70 Q50 78 55 70" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></symbol>
+            <symbol id="icon-sport" viewBox="0 0 100 100"><path d="M20 75 H80 C85 75 90 70 90 65 C90 60 85 55 80 50 L65 40 C60 35 50 35 45 40 L35 50 C25 50 20 60 20 75 Z" fill="white" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><path d="M45 40 C45 30 55 30 60 40" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M35 50 L50 60 M40 45 L55 55" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M20 65 H85" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></symbol>
+            <symbol id="icon-chart" viewBox="0 0 100 100"><path d="M15 15 V85 H85" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><rect x="25" y="50" width="16" height="35" rx="8" fill="white" stroke="currentColor" stroke-width="8"/><rect x="48" y="25" width="16" height="60" rx="8" fill="white" stroke="currentColor" stroke-width="8"/><rect x="71" y="40" width="16" height="45" rx="8" fill="white" stroke="currentColor" stroke-width="8"/><circle cx="50" cy="15" r="10" fill="#FDE047" stroke="currentColor" stroke-width="5"/><path d="M47 14 Q50 18 53 14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+
+            <symbol id="icon-sweat" viewBox="0 0 100 100">
+                <path d="M50 25 Q70 60 70 75 A 20 20 0 0 1 30 75 Q30 60 50 25 Z" fill="#6EE7B7" stroke="#059669" stroke-width="5" stroke-linejoin="round"/>
+                <path d="M42 65 A 6 6 0 0 0 48 58" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                <path d="M60 40 L65 35 M75 50 L82 48 M25 50 L18 48" stroke="#34D399" stroke-width="4" stroke-linecap="round"/>
+            </symbol>
+
+            <!-- 胶囊及详情运动图标 -->
+            <symbol id="mini-bike" viewBox="0 0 100 100"><circle cx="25" cy="70" r="20" fill="none" stroke="currentColor" stroke-width="12"/><circle cx="75" cy="70" r="20" fill="none" stroke="currentColor" stroke-width="12"/><path d="M25 70 L50 35 L75 70 M50 35 H75" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+            <symbol id="mini-dance" viewBox="0 0 100 100"><circle cx="50" cy="20" r="15" fill="currentColor"/><path d="M50 35 V65 M50 45 L25 20 M50 45 L75 20 M50 65 L30 95 M50 65 L70 95" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+            <symbol id="mini-stair" viewBox="0 0 100 100"><path d="M5 90 H35 V60 H65 V30 H95" fill="none" stroke="currentColor" stroke-width="14" stroke-linejoin="round"/><circle cx="35" cy="25" r="12" fill="currentColor"/></symbol>
+            <symbol id="mini-custom" viewBox="0 0 100 100"><path d="M55 10 L20 55 H50 L45 90 L80 45 H50 Z" fill="currentColor" stroke-linejoin="round"/></symbol>
+            
+            <symbol id="icon-sport-bike" viewBox="0 0 100 100"><circle cx="25" cy="70" r="16" fill="none" stroke="#4B5563" stroke-width="7"/><circle cx="75" cy="70" r="16" fill="none" stroke="#4B5563" stroke-width="7"/><path d="M25 70 L45 40 L65 40 M45 40 L50 70" fill="none" stroke="#4B5563" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="55" cy="18" r="12" fill="#FCA5A5" stroke="#4B5563" stroke-width="6"/><path d="M48 25 C38 25 35 35 40 55" fill="none" stroke="#F472B6" stroke-width="12" stroke-linecap="round"/><path d="M50 32 L70 38" fill="none" stroke="#FCA5A5" stroke-width="8" stroke-linecap="round"/><path d="M40 50 L50 70" fill="none" stroke="#38BDF8" stroke-width="10" stroke-linecap="round"/></symbol>
+            <symbol id="icon-sport-dance" viewBox="0 0 100 100"><rect x="10" y="80" width="80" height="10" rx="5" fill="#A7F3D0" stroke="#4B5563" stroke-width="6"/><circle cx="50" cy="20" r="12" fill="#FCA5A5" stroke="#4B5563" stroke-width="6"/><path d="M50 32 V55" fill="none" stroke="#F472B6" stroke-width="16" stroke-linecap="round"/><path d="M45 35 Q20 20 25 5 M55 35 Q80 20 75 5" fill="none" stroke="#FCA5A5" stroke-width="9" stroke-linecap="round"/><path d="M48 50 L30 80 M52 50 L70 80" fill="none" stroke="#38BDF8" stroke-width="12" stroke-linecap="round"/></symbol>
+            
+            <symbol id="icon-sport-stair" viewBox="0 0 100 100">
+                <path d="M 5 95 H 35 V 70 H 65 V 45 H 95" fill="none" stroke="#9CA3AF" stroke-width="8" stroke-linejoin="round"/>
+                <circle cx="70" cy="18" r="10" fill="#FCA5A5" stroke="#4B5563" stroke-width="6"/>
+                <path d="M 64 30 L 55 50" fill="none" stroke="#F472B6" stroke-width="14" stroke-linecap="round"/>
+                <path d="M 55 48 L 45 60 L 45 70" fill="none" stroke="#38BDF8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 55 48 L 65 35 L 75 45" fill="none" stroke="#38BDF8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 62 32 L 50 42 L 38 35 M 62 32 L 75 40 L 85 28" fill="none" stroke="#FCA5A5" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            </symbol>
+
+            <symbol id="icon-sport-custom" viewBox="0 0 100 100"><path d="M55 10 L20 55 H50 L45 90 L80 45 H50 Z" fill="#FDE047" stroke="#4B5563" stroke-width="6" stroke-linejoin="round"/><path d="M15 30 L25 35 M85 70 L95 75 M80 20 L90 15" fill="none" stroke="#FCA5A5" stroke-width="6" stroke-linecap="round"/></symbol>
+            <symbol id="icon-paw" viewBox="0 0 100 100"><path d="M50 45 C35 45 25 60 30 75 C35 90 65 90 70 75 C75 60 65 45 50 45 Z" fill="currentColor"/><circle cx="30" cy="35" r="12" fill="currentColor"/><circle cx="50" cy="20" r="14" fill="currentColor"/><circle cx="70" cy="35" r="12" fill="currentColor"/></symbol>
+
+            <!-- 状态/工具图标 -->
+            <symbol id="icon-blood-nat" viewBox="0 0 100 100"><path d="M50 15 C50 15 15 60 15 75 A 35 35 0 0 0 85 75 C85 60 50 15 50 15 Z" fill="#FDA4AF" stroke="#E11D48" stroke-width="5" stroke-linejoin="round"/><path d="M30 70 A 20 20 0 0 1 45 50" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/></symbol>
+            <symbol id="icon-blood-med" viewBox="0 0 100 100"><path d="M25 35 H75 V85 H25 Z" fill="white" stroke="#FDA4AF" stroke-width="8" stroke-linejoin="round"/><path d="M30 22 H70 V35 H30 Z" fill="#FFE4E6" stroke="#FDA4AF" stroke-width="8" stroke-linejoin="round"/><path d="M50 45 C50 45 35 65 35 75 A 15 15 0 0 0 65 75 C65 65 50 45 50 45 Z" fill="#FDA4AF" stroke="#E11D48" stroke-width="4"/></symbol>
+            <symbol id="icon-hearts" viewBox="0 0 100 100"><path d="M45 70 C45 70 15 45 15 25 C15 5 45 5 55 25 C65 5 95 5 95 25 C95 45 65 70 65 70" fill="#FCE7F3" stroke="#FDA4AF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M55 85 C55 85 25 60 25 40 C25 20 55 20 65 40 C75 20 105 20 105 40 C105 60 75 85 75 85" fill="#FDA4AF" stroke="#E11D48" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+            <symbol id="icon-sprout" viewBox="0 0 100 100"><path d="M50 90 Q50 60 50 45" fill="none" stroke="#34D399" stroke-width="12" stroke-linecap="round"/><path d="M50 55 Q20 55 20 25 Q50 20 50 55 Z" fill="#D1FAE5" stroke="#10B981" stroke-width="6" stroke-linejoin="round"/><path d="M50 65 Q80 65 80 35 Q50 30 50 65 Z" fill="#6EE7B7" stroke="#10B981" stroke-width="6" stroke-linejoin="round"/></symbol>
+            <symbol id="icon-boob-1" viewBox="0 0 100 100"><path d="M20 50 C20 15 80 15 80 50 C80 85 50 95 50 95 C50 95 20 85 20 50 Z" fill="#FCE7F3" stroke="#FDA4AF" stroke-width="8"/><path d="M35 30 Q50 20 65 30" fill="none" stroke="#F43F5E" stroke-width="6" stroke-linecap="round"/></symbol>
+            <symbol id="icon-boob-2" viewBox="0 0 100 100"><path d="M20 50 C20 15 80 15 80 50 C80 85 50 95 50 95 C50 95 20 85 20 50 Z" fill="#FBCFE8" stroke="#FDA4AF" stroke-width="8"/><path d="M35 30 Q50 15 65 30 M30 45 Q50 30 70 45" fill="none" stroke="#E11D48" stroke-width="7" stroke-linecap="round"/></symbol>
+            <symbol id="icon-boob-3" viewBox="0 0 100 100"><path d="M20 50 C20 15 80 15 80 50 C80 85 50 95 50 95 C50 95 20 85 20 50 Z" fill="#F9A8D4" stroke="#F43F5E" stroke-width="8"/><path d="M55 20 L40 50 H60 L45 80" fill="#FDE047" stroke="#B45309" stroke-width="6" stroke-linejoin="round"/></symbol>
+            <symbol id="icon-dis-1" viewBox="0 0 100 100"><path d="M40 20 C40 20 60 50 40 80 M60 20 C60 20 40 50 60 80" fill="none" stroke="#D8B4E2" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="50" r="10" fill="#F3E8FF" stroke="#C084FC" stroke-width="4"/></symbol>
+            <symbol id="icon-dis-2" viewBox="0 0 100 100"><path d="M50 20 Q70 50 70 70 A 20 20 0 0 1 30 70 Q30 50 50 20 Z" fill="#DBEAFE" stroke="#3B82F6" stroke-width="5" stroke-linejoin="round"/><path d="M42 65 A 8 8 0 0 0 52 58" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/></symbol>
+            <symbol id="icon-dis-3" viewBox="0 0 100 100"><path d="M30 60 Q20 40 40 35 Q50 15 65 30 Q85 30 75 55 Q90 70 65 80 Q40 85 30 60 Z" fill="#FEF08A" stroke="#CA8A04" stroke-width="5" stroke-linejoin="round"/><circle cx="45" cy="45" r="4" fill="#CA8A04"/><circle cx="60" cy="55" r="4" fill="#CA8A04"/></symbol>
+            <symbol id="icon-ribbon" viewBox="0 0 100 100"><path d="M50 50 L20 80 V20 L50 40 L80 20 V80 Z" fill="#FCE7F3" stroke="#F43F5E" stroke-width="6" stroke-linejoin="round"/><circle cx="50" cy="45" r="8" fill="#FDA4AF" stroke="#F43F5E" stroke-width="6"/></symbol>
+            <symbol id="icon-steth" viewBox="0 0 100 100"><path d="M30 20 V40 C30 60 70 60 70 40 V20" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><path d="M50 58 V80 L70 80" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="75" cy="80" r="8" fill="none" stroke="currentColor" stroke-width="7"/></symbol>
+            <symbol id="icon-folder" viewBox="0 0 100 100"><path d="M15 30 V80 H85 V40 H50 L40 30 H15 Z" fill="#FEF08A" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/></symbol>
+            <symbol id="icon-clock" viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="7"/><path d="M50 25 V50 L65 65" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 20 L30 10 M80 20 L70 10" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></symbol>
+            <symbol id="icon-medal" viewBox="0 0 100 100"><circle cx="50" cy="60" r="25" fill="#FDE047" stroke="currentColor" stroke-width="6"/><path d="M35 35 L20 10 H45 L50 20 L55 10 H80 L65 35" fill="#FDA4AF" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/><circle cx="50" cy="60" r="12" fill="none" stroke="currentColor" stroke-width="5"/></symbol>
+            <symbol id="icon-calendar-day" viewBox="0 0 100 100"><rect x="15" y="25" width="70" height="60" rx="10" fill="white" stroke="currentColor" stroke-width="6"/><path d="M15 45 H85 M30 15 V35 M70 15 V35" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="65" r="6" fill="currentColor"/></symbol>
+            <symbol id="icon-trash" viewBox="0 0 100 100"><path d="M25 25 V15 H75 V25 M15 25 H85 M30 25 V85 H70 V25" fill="white" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M45 40 V70 M55 40 V70" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></symbol>
+            <symbol id="icon-camera" viewBox="0 0 100 100"><rect x="15" y="25" width="70" height="50" rx="12" fill="white" stroke="currentColor" stroke-width="6"/><circle cx="50" cy="50" r="12" fill="none" stroke="currentColor" stroke-width="6"/><path d="M35 25 L40 15 H60 L65 25" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/><circle cx="80" cy="35" r="4" fill="currentColor"/></symbol>
+
+            <!-- ✨全新无表情纯手绘特效部件 (花瓣、星星、爱心、闪光) -->
+            <symbol id="icon-cf-heart" viewBox="0 0 100 100"><path d="M50 85 C 10 55, 10 20, 30 10 C 45 5, 50 20, 50 20 C 50 20, 55 5, 70 10 C 90 20, 90 55, 50 85 Z" fill="#F472B6"/></symbol>
+            <symbol id="icon-cf-star" viewBox="0 0 100 100"><path d="M50 5 L60 40 L95 50 L60 60 L50 95 L40 60 L5 50 L40 40 Z" fill="#FDE047"/></symbol>
+            <symbol id="icon-cf-flower" viewBox="0 0 100 100"><circle cx="50" cy="50" r="15" fill="#FDE047"/><circle cx="50" cy="20" r="15" fill="#FDA4AF"/><circle cx="50" cy="80" r="15" fill="#FDA4AF"/><circle cx="20" cy="50" r="15" fill="#FDA4AF"/><circle cx="80" cy="50" r="15" fill="#FDA4AF"/><circle cx="28" cy="28" r="15" fill="#FDA4AF"/><circle cx="72" cy="72" r="15" fill="#FDA4AF"/><circle cx="28" cy="72" r="15" fill="#FDA4AF"/><circle cx="72" cy="28" r="15" fill="#FDA4AF"/></symbol>
+            <symbol id="icon-cf-sparkle" viewBox="0 0 100 100"><path d="M50 0 Q50 50 100 50 Q50 50 50 100 Q50 50 0 50 Q50 50 50 0" fill="#A7F3D0"/></symbol>
+        </defs>
+    </svg>
+
+    <!-- Header -->
+    <header class="pt-8 pb-4 flex flex-col items-center relative z-40 w-full overflow-visible">
+        <div class="cloud-title-container">
+            <svg class="cloud-bg" viewBox="0 0 260 100" preserveAspectRatio="none"><path d="M30 80 C 10 80, 10 30, 30 30 C 40 10, 80 10, 100 20 C 120 0, 180 0, 200 20 C 220 10, 250 30, 240 50 C 260 70, 240 90, 220 90 C 180 100, 80 100, 30 80 Z" fill="white"/></svg>
+            <svg class="title-sun"><use href="#icon-sun-smile"></use></svg>
+            <h1 class="hero-title relative z-20">好好的日子</h1>
+            <svg class="title-moon"><use href="#icon-moon-smile"></use></svg>
+        </div>
+    </header>
+
+    <!-- ================== Tab 1: 日历 ================== -->
+    <section id="tab-calendar" class="tab-content active px-3">
+        <div class="flex justify-between items-center mb-4 px-2">
+            <button onclick="changeMonth(-1)" class="btn-cute shrink-0 px-5 py-2 text-xl">&lt;</button>
+            <h2 id="current-month-display" class="text-3xl font-bold font-title tracking-widest text-theme-ink drop-shadow-sm whitespace-nowrap">2026/03</h2>
+            <button onclick="changeMonth(1)" class="btn-cute shrink-0 px-5 py-2 text-xl">&gt;</button>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center font-bold text-base mb-2 text-theme-ink/60 px-1">
+            <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+        </div>
+        <div id="calendar-grid" class="grid grid-cols-7 gap-x-1 gap-y-4 px-1"></div>
+    </section>
+
+    <!-- 日历打卡弹窗 -->
+    <div id="modal-daily" class="fixed inset-0 bg-theme-ink/50 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity">
+        <div class="bg-white rounded-t-[32px] p-3 pt-4 w-full max-h-[90vh] overflow-y-auto relative shadow-[0_-10px_40px_rgba(0,0,0,0.15)] border-t-4 border-theme-pink hide-scrollbar">
+            <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-10 h-1.5 bg-theme-pink rounded-full"></div>
+            
+            <div class="flex justify-between items-center mb-2 mt-2 px-1">
+                <h3 class="text-xl font-bold font-title drop-shadow-sm whitespace-nowrap shrink-0" id="modal-date-title">打卡</h3>
+                <button onclick="closeDailyModal()" class="btn-cute shrink-0 bg-theme-yellow px-4 py-1 text-sm whitespace-nowrap">完成</button>
+            </div>
+            
+            <div class="space-y-2.5 font-bold">
+                <div class="card-soft p-2.5 border-2 border-theme-pink bg-theme-pink/10 shadow-none">
+                    <label class="block mb-1.5 text-theme-red flex items-center gap-1 text-sm whitespace-nowrap"><svg class="w-4 h-4 shrink-0"><use href="#icon-blood-nat"></use></svg> 月经记录</label>
+                    <div class="flex gap-2">
+                        <button onclick="setPeriod('natural')" id="btn-period-nat" class="btn-cute shrink-0 whitespace-nowrap flex-1 py-1.5 flex justify-center items-center gap-1 period-btn text-sm"><svg class="w-5 h-5 shrink-0"><use href="#icon-blood-nat"></use></svg> 自主</button>
+                        <button onclick="setPeriod('medicine')" id="btn-period-med" class="btn-cute shrink-0 whitespace-nowrap flex-1 py-1.5 flex justify-center items-center gap-1 period-btn text-sm"><svg class="w-5 h-5 shrink-0"><use href="#icon-blood-med"></use></svg> 用药</button>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="toggleData('sex')" id="btn-sex" class="btn-cute shrink-0 whitespace-nowrap flex-1 py-1.5 flex justify-center items-center gap-1 text-sm shadow-none border-2 bg-gray-50">
+                        <svg class="w-5 h-5 shrink-0"><use href="#icon-hearts"></use></svg> 同房
+                    </button>
+                    <button onclick="toggleData('ovulationDay')" id="btn-ovulation" class="btn-cute shrink-0 whitespace-nowrap flex-1 py-1.5 flex justify-center items-center gap-1 text-sm shadow-none border-2 bg-gray-50">
+                        <svg class="w-5 h-5 shrink-0"><use href="#icon-sprout"></use></svg> 排卵日
+                    </button>
+                </div>
+
+                <div class="card-soft p-2.5 shadow-none border-2 border-gray-100">
+                    <label class="block mb-1.5 flex items-center gap-1 text-sm whitespace-nowrap"><svg class="w-4 h-4 shrink-0"><use href="#icon-boob-1"></use></svg> 胸痛等级</label>
+                    <div class="flex gap-2">
+                        <button onclick="setBreast(1)" class="btn-cute shrink-0 whitespace-nowrap flex-1 py-1 flex flex-col items-center breast-btn shadow-none bg-gray-50 border-2" data-val="1"><svg class="w-5 h-5 mb-0.5 shrink-0"><use href="#icon-boob-1"></use></svg><span class="text-xs">轻微</span></button>
+                        <button onclick="setBreast(2)" class="btn-cute shrink-0 whitespace-nowrap flex-1 py-1 flex flex-col items-center breast-btn shadow-none bg-gray-50 border-2" data-val="2"><svg class="w-5 h-5 mb-0.5 shrink-0"><use href="#icon-boob-2"></use></svg><span class="text-xs">中度</span></button>
+                        <button onclick="setBreast(3)" class="btn-cute shrink-0 whitespace-nowrap flex-1 py-1 flex flex-col items-center breast-btn shadow-none bg-gray-50 border-2" data-val="3"><svg class="w-5 h-5 mb-0.5 shrink-0"><use href="#icon-boob-3"></use></svg><span class="text-xs">重度</span></button>
+                    </div>
+                </div>
+
+                <div class="card-soft p-2.5 shadow-none border-2 border-gray-100">
+                    <div class="flex justify-between items-center mb-1.5 gap-2">
+                        <label class="block flex items-center gap-1 text-sm whitespace-nowrap shrink-0"><svg class="w-4 h-4 shrink-0"><use href="#icon-dis-1"></use></svg> 白带状态</label>
+                        <label class="btn-cute shrink-0 px-2 py-0.5 bg-theme-mint/30 flex items-center gap-1 text-[11px] cursor-pointer shadow-none border-2 border-green-200 whitespace-nowrap"><svg class="w-3.5 h-3.5 text-theme-ink shrink-0"><use href="#icon-camera"></use></svg> 留底照<input type="file" class="hidden" accept="image/*" onchange="uploadDischargeImg(this)"></label>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mb-1.5">
+                        <button onclick="setDischarge('拉丝')" class="btn-cute shrink-0 whitespace-nowrap py-1 flex flex-col items-center dis-btn shadow-none bg-gray-50 border-2" data-val="拉丝"><svg class="w-5 h-5 shrink-0"><use href="#icon-dis-1"></use></svg><span class="text-[11px] mt-0.5">拉丝</span></button>
+                        <button onclick="setDischarge('水样')" class="btn-cute shrink-0 whitespace-nowrap py-1 flex flex-col items-center dis-btn shadow-none bg-gray-50 border-2" data-val="水样"><svg class="w-5 h-5 shrink-0"><use href="#icon-dis-2"></use></svg><span class="text-[11px] mt-0.5">水样</span></button>
+                        <button onclick="setDischarge('豆腐渣')" class="btn-cute shrink-0 whitespace-nowrap py-1 flex flex-col items-center dis-btn shadow-none bg-gray-50 border-2" data-val="豆腐渣"><svg class="w-5 h-5 shrink-0"><use href="#icon-dis-3"></use></svg><span class="text-[11px] mt-0.5">豆腐渣</span></button>
+                    </div>
+                    <div id="discharge-img-wrap" class="hidden relative w-full h-20 mt-1">
+                        <div class="absolute -top-3 right-0 bg-theme-ink/10 px-1.5 py-0.5 rounded text-[10px] text-theme-ink/70 flex items-center gap-0.5 whitespace-nowrap">
+                            <svg class="w-2.5 h-2.5 shrink-0"><use href="#icon-camera"></use></svg> 点击查看
+                        </div>
+                        <img id="discharge-img-prev" class="w-full h-full object-cover rounded-xl privacy-blur border-2 border-dashed border-theme-ink" onclick="this.classList.toggle('revealed')">
+                        <button onclick="delDischargeImg()" class="absolute -top-1 -right-1 bg-theme-red text-white p-1 rounded-full border border-white z-10 shrink-0"><svg class="w-3 h-3"><use href="#icon-trash"></use></svg></button>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="clearDailyRecords()" class="w-full flex justify-center items-center gap-1 text-theme-red py-2.5 mt-3 mb-1 border-2 border-dashed border-theme-red rounded-xl bg-theme-pink/30 text-sm font-bold whitespace-nowrap shrink-0">
+                <svg class="w-4 h-4 text-theme-red shrink-0"><use href="#icon-trash"></use></svg> 清空本日记忆
+            </button>
+        </div>
+    </div>
+
+    <!-- ================== Tab 2 排卵墙 ================== -->
+    <section id="tab-ovulation" class="tab-content px-4 mt-2">
+        <div class="card-soft p-2 flex mb-4 border-2 border-transparent bg-white">
+            <button onclick="switchOvuTab('strip')" id="tb-strip" class="btn-cute shrink-0 whitespace-nowrap shadow-none border-2 flex-1 min-w-0 py-2 bg-theme-pink">试纸墙</button>
+            <button onclick="switchOvuTab('bus')" id="tb-bus" class="btn-cute shrink-0 whitespace-nowrap shadow-none border-2 flex-1 min-w-0 py-2 bg-white ml-2">排卵监测</button>
+        </div>
+        
+        <div id="sec-strip" class="block">
+            <div class="card-soft p-4 mb-4 border-2 border-transparent bg-white">
+                <div class="flex gap-2 items-center mb-3 font-bold text-sm">
+                    <label class="shrink-0 whitespace-nowrap text-theme-ink/80">检测日期</label>
+                    <input type="date" id="ovu-strip-date" class="btn-cute shadow-none border-2 flex-1 min-w-[120px] px-1 py-1 bg-gray-50 text-center tracking-tight">
+                </div>
+
+                <div class="border-3 border-dashed border-theme-pink bg-pink-50 rounded-xl p-5 text-center mb-3 relative overflow-hidden flex flex-col items-center justify-center gap-2" id="ovu-placeholder">
+                    <input type="file" id="ovu-img-input" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10 w-full h-full">
+                    <svg class="w-10 h-10 text-theme-pink shrink-0"><use href="#icon-camera"></use></svg>
+                    <span class="font-bold text-theme-ink/70 whitespace-nowrap">添加试纸照片</span>
+                </div>
+                
+                <div id="ovu-crop-wrap" class="hidden relative w-full h-16 bg-gray-50 border-[3px] border-theme-pink rounded-xl overflow-hidden mb-3">
+                    <div id="ovu-scroll-area" class="w-full h-full overflow-auto relative touch-pan-x touch-pan-y hide-scrollbar">
+                        <img id="ovu-img-raw" class="max-w-none origin-top-left pointer-events-auto block" style="touch-action: pan-x pan-y;">
+                    </div>
+                    <div class="absolute inset-0 pointer-events-none border-2 border-dashed border-red-400 opacity-60"></div>
+                    <div class="absolute bottom-1 right-1 bg-white/90 px-1.5 py-0.5 rounded text-[10px] text-theme-red font-bold pointer-events-none shadow-sm flex items-center gap-0.5 whitespace-nowrap">
+                        <svg class="w-3 h-3 text-theme-red shrink-0"><use href="#icon-camera"></use></svg> 已撑满，可手指滑动微调
+                    </div>
+                    <button onclick="document.getElementById('ovu-img-input-reset').click()" class="absolute top-1 left-1 bg-white/80 p-1 rounded-full shadow shrink-0"><svg class="w-4 h-4 text-theme-ink shrink-0"><use href="#icon-camera"></use></svg></button>
+                    <input type="file" id="ovu-img-input-reset" accept="image/*" class="hidden">
+                </div>
+
+                <div class="flex gap-2 mb-3">
+                    <div class="flex-1 min-w-0 flex items-center bg-gray-50 rounded-xl border-2 border-theme-pink px-2">
+                        <span class="text-xs font-bold text-theme-ink/60 whitespace-nowrap shrink-0 mr-1">月经</span>
+                        <input type="number" id="ovu-cd" placeholder="第几天" class="w-full bg-transparent font-bold text-sm outline-none text-center min-w-0">
+                    </div>
+                    <select id="ovu-res" class="btn-cute shrink-0 flex-1 min-w-0 px-1 font-bold shadow-none border-2 text-center text-sm whitespace-nowrap"><option>强阳</option><option>弱阳</option><option>白板</option></select>
+                </div>
+                <button onclick="saveOvu('strip')" class="btn-cute shrink-0 whitespace-nowrap bg-theme-mint w-full py-2.5 font-bold shadow-none border-2 border-green-400 text-lg tracking-wider">裁切并上墙</button>
+            </div>
+            
+            <!-- 试纸墙独立时间线 -->
+            <div id="ovu-timeline-strip" class="space-y-3"></div>
+        </div>
+        
+        <div id="sec-bus" class="hidden">
+            <div class="card-soft p-4 mb-4 space-y-3 font-bold border-2 border-transparent bg-white">
+                <div class="flex gap-2 items-center"><label class="shrink-0 whitespace-nowrap w-[4.5rem] text-theme-ink/80">监测日期</label><input type="date" id="bus-d" class="btn-cute shadow-none border-2 flex-1 min-w-[120px] px-1 py-1 tracking-tight"></div>
+                <div class="flex gap-2 items-center"><label class="shrink-0 whitespace-nowrap w-[4.5rem] text-theme-ink/80">月经天数</label><input type="number" id="bus-cd" placeholder="选填" class="btn-cute shadow-none border-2 flex-1 min-w-0 px-2 py-1"></div>
+                <div class="flex gap-2 items-center"><label class="shrink-0 whitespace-nowrap w-[4.5rem] text-theme-ink/80">内膜(mm)</label><input type="number" id="bus-en" placeholder="厚度" class="btn-cute shadow-none border-2 flex-1 min-w-0 px-2 py-1"></div>
+                <div class="flex gap-2 items-center"><label class="shrink-0 whitespace-nowrap w-[4.5rem] text-theme-ink/80">右卵泡</label><input type="text" id="bus-r" placeholder="例:18x15" class="btn-cute shadow-none border-2 flex-1 min-w-0 px-2 py-1"></div>
+                <div class="flex gap-2 items-center"><label class="shrink-0 whitespace-nowrap w-[4.5rem] text-theme-ink/80">左卵泡</label><input type="text" id="bus-l" placeholder="例:小" class="btn-cute shadow-none border-2 flex-1 min-w-0 px-2 py-1"></div>
+                <button onclick="saveOvu('bus')" class="btn-cute shrink-0 whitespace-nowrap bg-theme-mint w-full py-2 shadow-none border-2 border-green-400">记录监测数据</button>
+            </div>
+            
+            <!-- B超监测独立时间线 -->
+            <div id="ovu-timeline-bus" class="space-y-3"></div>
+        </div>
+    </section>
+
+    <!-- ================== Tab 3 档案 ================== -->
+    <section id="tab-health" class="tab-content px-4 mt-2">
+        <div class="flex gap-2 mb-4 font-bold">
+            <button onclick="switchHealthMod('breast')" id="hmod-breast" class="btn-cute shrink-0 whitespace-nowrap shadow-none border-2 flex-1 min-w-0 py-2 bg-theme-pink flex justify-center items-center gap-1"><svg class="w-5 h-5 shrink-0"><use href="#icon-ribbon"></use></svg> 乳腺守护</button>
+            <button onclick="switchHealthMod('pcos')" id="hmod-pcos" class="btn-cute shrink-0 whitespace-nowrap shadow-none border-2 flex-1 min-w-0 py-2 bg-white flex justify-center items-center gap-1"><svg class="w-5 h-5 shrink-0"><use href="#icon-steth"></use></svg> 多囊专属</button>
+        </div>
+        
+        <div id="h-sec-breast" class="block">
+            <div class="card-soft p-4 mb-4 bg-white border-2 border-transparent">
+                <h3 class="font-bold text-lg mb-2 flex items-center gap-2 whitespace-nowrap"><svg class="w-5 h-5 shrink-0"><use href="#icon-boob-1"></use></svg> 痛感记录 (联动日历)</h3>
+                <input type="range" min="0" max="3" value="0" id="global-breast-slider" onchange="syncBreastSlider(this.value)">
+                <div class="flex justify-between text-xs font-bold mt-2 text-theme-ink/60 whitespace-nowrap"><span>无感</span><span>轻微</span><span>中度</span><span>重度</span></div>
+            </div>
+            <div class="card-soft p-4 font-bold border-2 border-transparent bg-white">
+                <h3 class="text-lg mb-3 border-b-2 border-theme-ink/10 pb-2 whitespace-nowrap">新增乳腺检查单</h3>
+                <div class="space-y-3">
+                    <div class="flex gap-2"><input type="date" id="br-date" class="btn-cute shadow-none border-2 flex-[2] min-w-[120px] px-1 py-2 text-sm tracking-tight"><input type="number" id="br-cd" placeholder="月经(选填)" class="btn-cute shadow-none border-2 flex-[1] min-w-0 px-2 py-2 text-center text-sm bg-gray-50"></div>
+                    <label class="btn-cute shrink-0 shadow-none border-2 px-4 py-2 bg-gray-50 flex justify-center items-center gap-2 text-center relative whitespace-nowrap"><svg class="w-5 h-5 text-theme-ink shrink-0"><use href="#icon-camera"></use></svg> 上传单据<input type="file" class="absolute inset-0 opacity-0" onchange="previewImg(this, 'br-img-prev')"></label>
+                    <div id="br-img-prev" class="hidden h-24 bg-cover bg-center rounded-xl border-2 border-theme-ink"></div>
+                    <div class="bg-theme-yellow p-3 border-2 border-dashed border-theme-red rounded-xl">
+                        <label class="block text-theme-red mb-1 flex items-center gap-1 whitespace-nowrap text-sm"><svg class="w-5 h-5 text-theme-red shrink-0"><use href="#icon-clock"></use></svg> 下次复查日期 (必填)</label>
+                        <input type="date" id="br-review" class="btn-cute shadow-none border-2 w-full px-3 py-2 bg-white tracking-tight">
+                    </div>
+                    <button onclick="saveHealthRec('breast')" class="btn-cute shrink-0 whitespace-nowrap shadow-none border-2 border-pink-400 bg-theme-pink w-full py-3 text-lg mt-2">存入档案</button>
+                </div>
+            </div>
+            
+            <h3 class="font-bold text-lg mt-6 mb-2 flex items-center gap-2 whitespace-nowrap"><svg class="w-6 h-6 shrink-0"><use href="#icon-folder"></use></svg> 乳腺档案箱</h3>
+            <div id="health-records-wall-breast" class="space-y-3"></div>
+        </div>
+        
+        <div id="h-sec-pcos" class="hidden">
+            <div class="card-soft p-4 font-bold border-2 border-transparent bg-white">
+                <select id="pcos-type" onchange="togglePcosFields()" class="btn-cute shrink-0 shadow-none border-2 border-blue-300 w-full px-3 py-2 mb-3 bg-theme-blue/20 whitespace-nowrap">
+                    <option value="激素六项">激素六项</option><option value="AMH">AMH 检测</option><option value="B超">卵巢/子宫B超</option><option value="糖耐">糖耐/胰岛素</option>
+                </select>
+                <div class="space-y-3 mb-4">
+                    <div class="flex gap-2"><input type="date" id="pc-date" class="btn-cute shadow-none border-2 flex-[2] min-w-[120px] px-1 py-2 text-sm tracking-tight"><input type="number" id="pc-cd" placeholder="月经(选填)" class="btn-cute shadow-none border-2 flex-[1] min-w-0 px-2 py-2 text-center text-sm bg-gray-50"></div>
+                    <div id="pcos-fields-hormone" class="grid grid-cols-2 gap-2"><input type="number" id="pc-lh" placeholder="LH 值" class="btn-cute min-w-0 shadow-none border-2 px-2 py-1"><input type="number" id="pc-fsh" placeholder="FSH 值" class="btn-cute min-w-0 shadow-none border-2 px-2 py-1"><input type="number" id="pc-e2" placeholder="E2 值" class="btn-cute min-w-0 shadow-none border-2 px-2 py-1"></div>
+                    <div id="pcos-fields-amh" class="hidden"><input type="number" id="pc-amh" placeholder="AMH 数值" class="btn-cute min-w-0 shadow-none border-2 w-full px-3 py-2"></div>
+                    <div id="pcos-fields-bus" class="hidden grid grid-cols-2 gap-2"><input type="number" id="pc-bus-en" placeholder="内膜厚度" class="btn-cute min-w-0 shadow-none border-2 px-2 py-1"><input type="number" id="pc-bus-fol" placeholder="基础卵泡数" class="btn-cute min-w-0 shadow-none border-2 px-2 py-1"></div>
+                    <div id="pcos-fields-sugar" class="hidden grid grid-cols-2 gap-2"><input type="number" id="pc-glu0" placeholder="空腹血糖" class="btn-cute min-w-0 shadow-none border-2 px-2 py-1"><input type="number" id="pc-ins0" placeholder="空腹胰岛素" class="btn-cute min-w-0 shadow-none border-2 px-2 py-1"></div>
+                    <label class="btn-cute shrink-0 shadow-none border-2 px-4 py-2 bg-gray-50 flex justify-center items-center gap-2 text-center relative whitespace-nowrap"><svg class="w-5 h-5 text-theme-ink shrink-0"><use href="#icon-camera"></use></svg> 上传单据<input type="file" class="absolute inset-0 opacity-0" onchange="previewImg(this, 'pc-img-prev')"></label>
+                    <div id="pc-img-prev" class="hidden h-24 bg-cover bg-center rounded-xl border-2 border-theme-ink"></div>
+                    <div class="bg-theme-yellow p-3 border-2 border-dashed border-theme-red rounded-xl">
+                        <label class="block text-theme-red mb-1 flex items-center gap-1 whitespace-nowrap text-sm"><svg class="w-5 h-5 text-theme-red shrink-0"><use href="#icon-clock"></use></svg> 下次复查日期 (必填)</label>
+                        <input type="date" id="pc-review" class="btn-cute shadow-none border-2 w-full px-3 py-2 bg-white tracking-tight">
+                    </div>
+                </div>
+                <button onclick="saveHealthRec('pcos')" class="btn-cute shrink-0 whitespace-nowrap bg-theme-blue/40 border-2 border-blue-400 shadow-none w-full py-3 text-lg">存入档案</button>
+            </div>
+            
+            <h3 class="font-bold text-lg mt-6 mb-2 flex items-center gap-2 whitespace-nowrap"><svg class="w-6 h-6 shrink-0"><use href="#icon-folder"></use></svg> 多囊档案箱</h3>
+            <div id="health-records-wall-pcos" class="space-y-3"></div>
+        </div>
+    </section>
+
+    <!-- ================== Tab 4: 运动 ================== -->
+    <section id="tab-sport" class="tab-content px-4 mt-2 relative">
+        <div class="card-soft p-4 border-2 border-transparent bg-white shadow-[0_8px_25px_rgba(52,211,153,0.15)] relative overflow-hidden">
+            
+            <div class="flex justify-between items-center bg-gray-50 border-2 border-theme-ink/10 rounded-xl p-3 mb-5 gap-1.5">
+                <span class="font-bold text-[14px] text-theme-ink/80 flex items-center gap-1 shrink-0 whitespace-nowrap"><svg class="w-4 h-4 shrink-0"><use href="#icon-calendar-day"></use></svg> 补录/记录日期</span>
+                <input type="date" id="sport-date" class="btn-cute shadow-none border-2 px-1 py-1.5 bg-white text-sm font-bold flex-1 min-w-[125px] text-center text-theme-ink tracking-tight">
+            </div>
+
+            <div class="bg-theme-pink/10 border-2 border-theme-pink rounded-xl p-3 mb-5">
+                <div class="flex justify-center gap-2 mb-3">
+                    <svg class="w-7 h-7 text-gray-300 transition-colors duration-500 shrink-0" id="paw-1"><use href="#icon-paw"></use></svg>
+                    <svg class="w-7 h-7 text-gray-300 transition-colors duration-500 shrink-0" id="paw-2"><use href="#icon-paw"></use></svg>
+                    <svg class="w-7 h-7 text-gray-300 transition-colors duration-500 shrink-0" id="paw-3"><use href="#icon-paw"></use></svg>
+                    <svg class="w-7 h-7 text-gray-300 transition-colors duration-500 shrink-0" id="paw-4"><use href="#icon-paw"></use></svg>
+                    <svg class="w-7 h-7 text-gray-300 transition-colors duration-500 shrink-0" id="paw-5"><use href="#icon-paw"></use></svg>
+                </div>
+                <div class="flex gap-2 items-center font-bold">
+                    <span class="text-theme-ink shrink-0 pl-1 whitespace-nowrap text-sm">单日步数</span>
+                    <input type="number" id="sp-steps" placeholder="精准输入步数" class="btn-cute min-w-0 shadow-none border-2 flex-1 px-2 py-2 text-center text-base bg-white" oninput="updatePawProgress()">
+                </div>
+            </div>
+
+            <h3 class="font-bold text-lg flex items-center gap-2 mb-4 whitespace-nowrap">选择流汗方式 <svg class="w-5 h-5 shrink-0"><use href="#icon-sweat"></use></svg></h3>
+
+            <div class="grid grid-cols-3 gap-2 mb-5">
+                <button onclick="pickSport('单车')" id="sp-单车" class="btn-cute shrink-0 shadow-none border-2 p-2 flex flex-col items-center sp-btn bg-gray-50 whitespace-nowrap">
+                    <svg class="w-12 h-12 mb-1 shrink-0"><use href="#icon-sport-bike"></use></svg><span class="text-sm font-bold text-theme-ink">单车</span>
+                </button>
+                <button onclick="pickSport('跳操')" id="sp-跳操" class="btn-cute shrink-0 shadow-none border-2 p-2 flex flex-col items-center sp-btn bg-gray-50 whitespace-nowrap">
+                    <svg class="w-12 h-12 mb-1 shrink-0"><use href="#icon-sport-dance"></use></svg><span class="text-sm font-bold text-theme-ink">跳操</span>
+                </button>
+                <button onclick="pickSport('爬楼')" id="sp-爬楼" class="btn-cute shrink-0 shadow-none border-2 p-2 flex flex-col items-center sp-btn bg-gray-50 whitespace-nowrap">
+                    <svg class="w-12 h-12 mb-1 shrink-0"><use href="#icon-sport-stair"></use></svg><span class="text-sm font-bold text-theme-ink">爬楼</span>
+                </button>
+            </div>
+            
+            <div class="flex gap-2 mb-5 font-bold items-center">
+                <div class="btn-cute shrink-0 shadow-none border-2 bg-theme-yellow/30 p-2 flex items-center justify-center w-12 border-yellow-300">
+                    <svg class="w-7 h-7 shrink-0"><use href="#icon-sport-custom"></use></svg>
+                </div>
+                <input type="text" id="sp-cust" placeholder="其他运动..." class="btn-cute min-w-0 shadow-none border-2 flex-1 px-3 py-2 text-base bg-gray-50" oninput="pickSport('custom')">
+            </div>
+            
+            <div class="flex gap-3 mb-6 font-bold">
+                <div class="flex-1 min-w-0"><label class="block text-xs mb-1.5 text-theme-ink/70 pl-1 whitespace-nowrap">时长(分钟)</label><input type="number" id="sp-dur" class="btn-cute min-w-0 shadow-none border-2 bg-gray-50 w-full px-2 py-2.5 text-center text-lg"></div>
+                <div class="flex-1 min-w-0"><label class="block text-xs mb-1.5 text-theme-ink/70 pl-1 whitespace-nowrap">热量(千卡)</label><input type="number" id="sp-cal" class="btn-cute min-w-0 shadow-none border-2 bg-gray-50 w-full px-2 py-2.5 text-center text-lg"></div>
+            </div>
+            
+            <button onclick="submitSport()" class="btn-cute shrink-0 whitespace-nowrap bg-theme-mint w-full py-3.5 text-lg font-title tracking-widest text-theme-ink border-2 border-green-400 shadow-[0_6px_12px_rgba(209,250,229,0.8)] relative overflow-hidden">
+                <span class="relative z-10">贴上日历</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- ================== Tab 5 数据纵览 ================== -->
+    <section id="tab-data" class="tab-content px-4 mt-2">
+        <h2 class="text-2xl font-bold mb-4 font-title ml-2 flex items-center gap-2 whitespace-nowrap"><svg class="w-8 h-8 text-theme-ink shrink-0"><use href="#icon-chart"></use></svg> 健康魔方</h2>
+        <div class="card-soft p-3 mb-4 border-2 border-transparent bg-white">
+            <h3 class="font-bold text-md mb-1 text-center whitespace-nowrap text-sm">周期规律度与运动叠加图</h3>
+            <div class="relative h-56 w-full"><canvas id="chart-magic"></canvas></div>
+        </div>
+        <div class="card-soft p-4 border-2 border-transparent bg-white">
+            <h3 class="font-bold text-base mb-3 border-b-2 border-theme-ink/10 pb-2 flex justify-between items-center gap-2"><span class="whitespace-nowrap shrink-0">本月流汗账单</span> <span id="month-name-display" class="text-theme-red whitespace-nowrap shrink-0 text-sm"></span></h3>
+            <div class="bg-theme-yellow p-3 rounded-xl border-2 border-theme-ink/20 font-bold flex justify-between items-center text-base mb-4 gap-2">
+                <span class="whitespace-nowrap shrink-0">月总计：</span><span id="sp-tot" class="text-theme-red whitespace-nowrap shrink-0">0m / 0k</span>
+            </div>
+            <h4 class="font-bold text-sm text-theme-ink/60 mb-2 flex items-center gap-1 whitespace-nowrap"><svg class="w-4 h-4 text-theme-ink shrink-0"><use href="#icon-medal"></use></svg> 各项发力统计</h4>
+            <div id="sport-type-summary" class="grid grid-cols-2 gap-2 mb-4"></div>
+            <h4 class="font-bold text-sm text-theme-ink/60 mb-2 flex items-center gap-1 whitespace-nowrap"><svg class="w-4 h-4 text-theme-ink shrink-0"><use href="#icon-calendar-day"></use></svg> 每日明细</h4>
+            <ul id="sport-list" class="space-y-2 text-sm font-bold max-h-48 overflow-y-auto pr-1 hide-scrollbar"></ul>
+        </div>
+    </section>
+
+    <nav class="fixed bottom-0 w-full bg-white/95 backdrop-blur-xl border-t-[3px] border-theme-ink/10 rounded-t-[36px] z-50 nav-safe-area shadow-[0_-10px_30px_rgba(253,164,175,0.15)]">
+        <div class="flex justify-around items-center pt-3 pb-1">
+            <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn flex flex-col items-center text-theme-ink/40 w-1/5 shrink-0"><svg class="w-10 h-10 mb-1"><use href="#icon-cal"></use></svg></button>
+            <button onclick="switchTab('ovulation')" id="nav-ovulation" class="nav-btn flex flex-col items-center text-theme-ink/40 w-1/5 shrink-0"><svg class="w-10 h-10 mb-1"><use href="#icon-ovu"></use></svg></button>
+            <button onclick="switchTab('health')" id="nav-health" class="nav-btn flex flex-col items-center text-theme-ink/40 w-1/5 shrink-0"><svg class="w-10 h-10 mb-1"><use href="#icon-health"></use></svg></button>
+            <button onclick="switchTab('sport')" id="nav-sport" class="nav-btn flex flex-col items-center text-theme-ink/40 w-1/5 shrink-0"><svg class="w-10 h-10 mb-1"><use href="#icon-sport"></use></svg></button>
+            <button onclick="switchTab('data')" id="nav-data" class="nav-btn flex flex-col items-center text-theme-ink/40 w-1/5 shrink-0"><svg class="w-10 h-10 mb-1"><use href="#icon-chart"></use></svg></button>
+        </div>
+    </nav>
+
+    <!-- 顶层提示层 -->
+    <div id="toast" class="fixed top-[15%] left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur text-theme-ink px-6 py-3 rounded-2xl font-bold border-2 border-theme-pink shadow-soft opacity-0 pointer-events-none transform -translate-y-4 transition-all z-[99999] flex items-center gap-2 whitespace-nowrap shrink-0"></div>
+
+    <script>
+        let currDate = new Date(); let selDateStr = fmtDate(currDate); let curSport = ''; let chartObj = null;
+        let confettiFired = false; 
+
+        // 底层数据绑定的格式仍然保留 YYYY-MM-DD，这是HTML <input type="date"> 的硬性要求
+        function fmtDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+        
+        // ✨ 新增展示专用格式化方法：将 YYYY-MM-DD 转换为 YYYY/MM/DD 供所有纯文本展示使用
+        function dispDate(dStr) { return dStr ? dStr.replace(/-/g, '/') : ''; }
+        
+        function showToast(msg) { 
+            const t = document.getElementById('toast'); 
+            t.innerHTML = `<svg class="w-5 h-5 text-yellow-400 shrink-0" viewBox="0 0 100 100"><use href="#icon-cf-star"></use></svg> <span class="whitespace-nowrap">${msg}</span>`; 
+            t.classList.remove('opacity-0', '-translate-y-4'); t.classList.add('opacity-100', 'translate-y-0'); 
+            setTimeout(() => { t.classList.add('opacity-0', '-translate-y-4'); t.classList.remove('opacity-100', 'translate-y-0'); }, 2000); 
+        }
+        
+        function compressImg(file, cb) { const r = new FileReader(); r.onload = e => { const img = new Image(); img.onload = () => { const cvs = document.createElement('canvas'); const max = 800; let w = img.width, h = img.height; if(w > max) { h = Math.round(h*max/w); w = max; } cvs.width = w; cvs.height = h; cvs.getContext('2d').drawImage(img, 0, 0, w, h); cb(cvs.toDataURL('image/jpeg', 0.8)); }; img.src = e.target.result; }; r.readAsDataURL(file); }
+
+        const DB = { db: null, init() { return new Promise(r => { const req = indexedDB.open('HaoDB_V8', 1); req.onupgradeneeded = e => { let d = e.target.result; if(!d.objectStoreNames.contains('daily')) d.createObjectStore('daily', {keyPath: 'date'}); if(!d.objectStoreNames.contains('ovu')) d.createObjectStore('ovu', {keyPath: 'id', autoIncrement: true}); if(!d.objectStoreNames.contains('health2')) d.createObjectStore('health2', {keyPath: 'id', autoIncrement: true}); }; req.onsuccess = e => { this.db = e.target.result; r(); }; }); }, get(s, k) { return new Promise(r => { const req = this.db.transaction(s).objectStore(s).get(k); req.onsuccess = ()=>r(req.result); }); }, put(s, d) { return new Promise(r => { const tx = this.db.transaction(s, 'readwrite'); tx.objectStore(s).put(d); tx.oncomplete = ()=>r(); }); }, add(s, d) { return new Promise(r => { const tx = this.db.transaction(s, 'readwrite'); tx.objectStore(s).add(d); tx.oncomplete = ()=>r(); }); }, getAll(s) { return new Promise(r => { const req = this.db.transaction(s).objectStore(s).getAll(); req.onsuccess = ()=>r(req.result); }); }, del(s, i) { return new Promise(r => { const tx = this.db.transaction(s, 'readwrite'); tx.objectStore(s).delete(i); tx.oncomplete = ()=>r(); }); } };
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.getElementById(`nav-${tab}`).classList.add('active');
+            if(tab==='calendar') renderCal();
+            if(tab==='sport') { document.getElementById('sport-date').value = fmtDate(new Date()); confettiFired = false; }
+            if(tab==='health') syncHealthTab();
+            if(tab==='ovulation') loadOvu();
+            if(tab==='data') renderChart();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* 1. 日历防溢出与重新映射的新版白带 */
+        function getMiniSportIconId(t) { return t==='单车'?'mini-bike':t==='跳操'?'mini-dance':t==='爬楼'?'mini-stair':'mini-custom'; }
+        async function renderCal() {
+            const y = currDate.getFullYear(), m = currDate.getMonth() + 1;
+            document.getElementById('current-month-display').textContent = `${y}/${String(m).padStart(2,'0')}`;
+            const grid = document.getElementById('calendar-grid'); grid.innerHTML = '';
+            const firstD = new Date(y, m-1, 1).getDay(); const days = new Date(y, m, 0).getDate();
+            const todayStr = fmtDate(new Date());
+            const allData = await DB.getAll('daily'); const dMap = {}; allData.forEach(d => dMap[d.date] = d);
+            for(let i=0; i<firstD; i++) grid.innerHTML += `<div></div>`;
+            for(let d=1; d<=days; d++) {
+                const dStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; const dt = dMap[dStr] || {};
+                let cellCls = "calendar-cell cursor-pointer"; if(dStr === todayStr) cellCls += " today";
+                let numCls = "date-num"; if(dt.period) numCls += " has-period";
+                let icHTML = `<div class="icon-grid">`;
+                if(dt.period==='natural') icHTML+=`<svg class="w-4 h-4 shrink-0"><use href="#icon-blood-nat"></use></svg>`;
+                if(dt.period==='medicine') icHTML+=`<svg class="w-4 h-4 shrink-0"><use href="#icon-blood-med"></use></svg>`;
+                if(dt.sex) icHTML+=`<svg class="w-4 h-4 shrink-0"><use href="#icon-hearts"></use></svg>`;
+                if(dt.ovulationDay) icHTML+=`<svg class="w-4 h-4 shrink-0"><use href="#icon-sprout"></use></svg>`;
+                if(dt.breast) icHTML+=`<svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-boob-${dt.breast}"></use></svg>`;
+                if(dt.discharge && dt.discharge!=='无'){ let map={'拉丝':1,'水样':2,'豆腐渣':3}; icHTML+=`<svg class="w-3.5 h-3.5 shrink-0"><use href="#icon-dis-${map[dt.discharge]}"></use></svg>`; }
+                icHTML += `</div>`;
+                let spHTML = '';
+                if(dt.sport && dt.sport.length>0) {
+                    let s = dt.sport[0]; let miniId = getMiniSportIconId(s.type);
+                    spHTML = `<div class="sport-pill"><div class="flex items-center gap-0.5"><svg class="w-3 h-3 text-theme-ink flex-shrink-0"><use href="#${miniId}"></use></svg><span class="text-[10px] leading-none whitespace-nowrap">${s.dur}m</span></div><div class="text-[8.5px] text-theme-red leading-none pb-0.5 whitespace-nowrap">${s.cal}k</div></div>`;
+                }
+                grid.innerHTML += `<div class="${cellCls}" onclick="openModal('${dStr}')"><div class="${numCls}">${d}</div>${icHTML}${spHTML}</div>`;
+            }
+        }
+        function changeMonth(off) { currDate.setMonth(currDate.getMonth()+off); renderCal(); }
+
+        async function openModal(ds) {
+            selDateStr = ds; 
+            document.getElementById('modal-date-title').textContent = `打卡 ${dispDate(ds)}`;
+            const dt = (await DB.get('daily', ds)) || {date: ds};
+            document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('selected', 'bg-theme-pink'));
+            if(dt.period === 'natural') document.getElementById('btn-period-nat').classList.add('selected');
+            if(dt.period === 'medicine') document.getElementById('btn-period-med').classList.add('selected');
+            document.getElementById('btn-sex').classList.toggle('selected', !!dt.sex);
+            document.getElementById('btn-ovulation').classList.toggle('selected', !!dt.ovulationDay);
+            document.querySelectorAll('.breast-btn').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.val) === (dt.breast||0)));
+            document.querySelectorAll('.dis-btn').forEach(b => b.classList.toggle('selected', b.dataset.val === dt.discharge));
+            const imgWrap = document.getElementById('discharge-img-wrap'); const imgPrev = document.getElementById('discharge-img-prev');
+            if(dt.dischargeImg) { imgPrev.src = dt.dischargeImg; imgPrev.classList.add('privacy-blur'); imgPrev.classList.remove('revealed'); imgWrap.classList.remove('hidden'); } else { imgWrap.classList.add('hidden'); }
+            document.getElementById('modal-daily').classList.remove('hidden'); document.getElementById('modal-daily').classList.add('flex');
+        }
+        function closeDailyModal() { document.getElementById('modal-daily').classList.add('hidden'); renderCal(); }
+        async function updateDaily(k, v) { let d = (await DB.get('daily', selDateStr)) || {date: selDateStr}; d[k] = v; await DB.put('daily', d); }
+        async function setPeriod(t) { let d = (await DB.get('daily', selDateStr)) || {date: selDateStr}; d.period = (d.period===t)?null:t; await DB.put('daily', d); openModal(selDateStr); showToast(d.period==='natural'?'已记录自主月经':d.period==='medicine'?'已记录用药月经':'已取消月经记录'); }
+        async function toggleData(k) { let d = (await DB.get('daily', selDateStr)) || {date: selDateStr}; d[k] = !d[k]; await DB.put('daily', d); openModal(selDateStr); let n = k==='sex'?'同房':'排卵日'; showToast(d[k]?`已记录${n}`:`已取消${n}`); }
+        async function setBreast(l) { let d = (await DB.get('daily', selDateStr)) || {date: selDateStr}; d.breast = (d.breast===l)?0:l; await DB.put('daily', d); openModal(selDateStr); showToast(d.breast?'已记录胸痛等级':'已取消胸痛记录'); }
+        async function setDischarge(t) { let d = (await DB.get('daily', selDateStr)) || {date: selDateStr}; d.discharge = (d.discharge===t)?'无':t; await DB.put('daily', d); openModal(selDateStr); showToast(d.discharge==='无'?'已取消白带记录':`已记录${d.discharge}白带`); }
+        function uploadDischargeImg(input) { if(input.files[0]) { compressImg(input.files[0], async (base64) => { await updateDaily('dischargeImg', base64); showToast('留底照已添加'); openModal(selDateStr); }); } }
+        async function delDischargeImg() { if(confirm('删除这张留底照？')) { await updateDaily('dischargeImg', null); showToast('照片已删除'); openModal(selDateStr); } }
+        async function clearDailyRecords() { if(confirm('确定清空本日起始记忆吗？')){ await DB.put('daily', {date: selDateStr}); closeDailyModal(); showToast('记忆已清空'); } }
+
+        /* ================= 4. 排卵试纸真·智能填充不留黑边裁切逻辑 ================= */
+        function switchOvuTab(t){ 
+            document.getElementById('sec-strip').classList.toggle('hidden',t!=='strip'); 
+            document.getElementById('sec-bus').classList.toggle('hidden',t!=='bus'); 
+            document.getElementById('tb-strip').classList.toggle('bg-theme-pink',t==='strip'); 
+            document.getElementById('tb-strip').classList.toggle('bg-white',t!=='strip'); 
+            document.getElementById('tb-bus').classList.toggle('bg-theme-pink',t==='bus'); 
+            document.getElementById('tb-bus').classList.toggle('bg-white',t!=='bus'); 
+        }
+        
+        let ovuInputRaw = document.getElementById('ovu-img-input');
+        let ovuInputReset = document.getElementById('ovu-img-input-reset');
+        let ovuImgRaw = document.getElementById('ovu-img-raw');
+        
+        function handleOvuUpload(e) {
+            if(e.target.files[0]) {
+                const r = new FileReader();
+                r.onload = ev => {
+                    ovuImgRaw.src = ev.target.result;
+                    document.getElementById('ovu-placeholder').classList.add('hidden');
+                    document.getElementById('ovu-crop-wrap').classList.remove('hidden');
+                    
+                    ovuImgRaw.onload = () => {
+                        let sa = document.getElementById('ovu-scroll-area');
+                        let imgRatio = ovuImgRaw.naturalWidth / ovuImgRaw.naturalHeight;
+                        let saRatio = sa.clientWidth / sa.clientHeight;
+                        
+                        if(imgRatio > saRatio) {
+                            ovuImgRaw.style.height = sa.clientHeight + 'px';
+                            ovuImgRaw.style.width = 'auto';
+                        } 
+                        else {
+                            ovuImgRaw.style.width = sa.clientWidth + 'px';
+                            ovuImgRaw.style.height = 'auto';
+                        }
+                        
+                        setTimeout(() => {
+                            sa.scrollTop = Math.max(0, (ovuImgRaw.clientHeight - sa.clientHeight) / 2);
+                            sa.scrollLeft = Math.max(0, (ovuImgRaw.clientWidth - sa.clientWidth) / 2);
+                        }, 50);
+                    };
+                }; r.readAsDataURL(e.target.files[0]);
+            }
+        }
+        ovuInputRaw.addEventListener('change', handleOvuUpload);
+        ovuInputReset.addEventListener('change', handleOvuUpload);
+
+        async function saveOvu(type) {
+            let rec = { type: type };
+            if(type==='strip') { 
+                if(!ovuImgRaw.src || ovuImgRaw.src.endsWith('index.html')) return showToast('请先添加试纸照片呀');
+                const scrollArea = document.getElementById('ovu-scroll-area');
+                const cvs = document.createElement('canvas');
+                cvs.width = scrollArea.clientWidth; 
+                cvs.height = scrollArea.clientHeight;
+                const ctx = cvs.getContext('2d');
+                
+                const scaleX = ovuImgRaw.naturalWidth / ovuImgRaw.clientWidth;
+                const scaleY = ovuImgRaw.naturalHeight / ovuImgRaw.clientHeight;
+                
+                ctx.drawImage(
+                    ovuImgRaw, 
+                    scrollArea.scrollLeft * scaleX, 
+                    scrollArea.scrollTop * scaleY, 
+                    cvs.width * scaleX, 
+                    cvs.height * scaleY, 
+                    0, 0, cvs.width, cvs.height
+                );
+                
+                rec.img = cvs.toDataURL('image/jpeg', 0.85); 
+                rec.res = document.getElementById('ovu-res').value; 
+                rec.cd = document.getElementById('ovu-cd').value || '?';
+                rec.date = document.getElementById('ovu-strip-date').value || fmtDate(new Date());
+                
+                document.getElementById('ovu-placeholder').classList.remove('hidden');
+                document.getElementById('ovu-crop-wrap').classList.add('hidden');
+                ovuImgRaw.src = ''; ovuImgRaw.style.width=''; ovuImgRaw.style.height=''; ovuInputRaw.value = ''; ovuInputReset.value = '';
+            } else { 
+                rec.date=document.getElementById('bus-d').value||fmtDate(new Date()); 
+                rec.cd=document.getElementById('bus-cd').value; 
+                rec.d1=document.getElementById('bus-en').value; 
+                rec.d2=document.getElementById('bus-r').value; 
+                rec.d3=document.getElementById('bus-l').value; 
+            }
+            await DB.add('ovu', rec); showToast(type==='strip'?'已完美裁剪上墙':'监测记录已保存'); loadOvu();
+        }
+
+        async function loadOvu() {
+            document.getElementById('ovu-strip-date').value = fmtDate(new Date());
+            document.getElementById('bus-d').value = fmtDate(new Date());
+
+            const l = await DB.getAll('ovu'); 
+            let hStrip = '', hBus = '';
+            l.forEach(i => {
+                let dHTML = '';
+                let badgeHTML = (cd) => `<span class="font-bold text-xs bg-theme-pink/30 text-theme-ink px-2 py-0.5 rounded border border-theme-pink whitespace-nowrap shrink-0 w-fit">月经第${cd}天</span>`;
+                
+                if(i.type==='strip') {
+                    dHTML = `<div class="flex flex-col flex-1 min-w-0"><div class="flex justify-between items-center mb-1 gap-2">${badgeHTML(i.cd||'?')}<span class="font-bold text-base tracking-widest whitespace-nowrap shrink-0 ${i.res==='强阳'?'text-theme-red':'text-theme-ink'}">${i.res}</span></div><img src="${i.img}" class="w-full h-12 object-cover rounded shadow-sm border border-gray-200"></div>`;
+                    hStrip += `<div class="card-soft p-3 flex relative shadow-none border-2 border-gray-100 bg-white gap-2"><button onclick="DB.del('ovu',${i.id});loadOvu()" class="absolute top-2 right-2 text-gray-300 shrink-0"><svg class="w-5 h-5 text-gray-400 shrink-0"><use href="#icon-trash"></use></svg></button><div class="mr-1 font-bold bg-theme-ink text-white px-2 py-1 rounded-xl text-[11px] h-fit whitespace-nowrap shrink-0">${dispDate(i.date)}</div><div class="flex-1 min-w-0">${dHTML}</div></div>`;
+                } else {
+                    let cdHeader = i.cd ? `<div class="mb-1.5">${badgeHTML(i.cd)}</div>` : '';
+                    dHTML = `<div class="font-bold flex flex-col gap-1 text-sm text-theme-ink">${cdHeader}<div>内膜: ${i.d1||'-'} mm</div><div>右: ${i.d2||'无'}</div><div>左: ${i.d3||'无'}</div></div>`;
+                    hBus += `<div class="card-soft p-3 flex relative shadow-none border-2 border-gray-100 bg-white gap-2"><button onclick="DB.del('ovu',${i.id});loadOvu()" class="absolute top-2 right-2 text-gray-300 shrink-0"><svg class="w-5 h-5 text-gray-400 shrink-0"><use href="#icon-trash"></use></svg></button><div class="mr-1 font-bold bg-theme-ink text-white px-2 py-1 rounded-xl text-[11px] h-fit whitespace-nowrap shrink-0">${dispDate(i.date)}</div><div class="flex-1 min-w-0">${dHTML}</div></div>`;
+                }
+            }); 
+            document.getElementById('ovu-timeline-strip').innerHTML = hStrip || '<div class="text-center text-sm font-bold text-theme-ink/40 py-4">墙上空空如也~</div>';
+            document.getElementById('ovu-timeline-bus').innerHTML = hBus || '<div class="text-center text-sm font-bold text-theme-ink/40 py-4">暂无监测记录~</div>';
+        }
+
+        /* 档案相关 */
+        function switchHealthMod(m) { document.getElementById('h-sec-breast').classList.toggle('hidden', m!=='breast'); document.getElementById('h-sec-pcos').classList.toggle('hidden', m!=='pcos'); document.getElementById('hmod-breast').classList.toggle('bg-theme-pink', m==='breast'); document.getElementById('hmod-breast').classList.toggle('bg-white', m!=='breast'); document.getElementById('hmod-pcos').classList.toggle('bg-theme-pink', m==='pcos'); document.getElementById('hmod-pcos').classList.toggle('bg-white', m!=='pcos'); }
+        function togglePcosFields() { const v = document.getElementById('pcos-type').value; document.getElementById('pcos-fields-hormone').classList.toggle('hidden', v!=='激素六项'); document.getElementById('pcos-fields-amh').classList.toggle('hidden', v!=='AMH'); document.getElementById('pcos-fields-bus').classList.toggle('hidden', v!=='B超'); document.getElementById('pcos-fields-sugar').classList.toggle('hidden', v!=='糖耐'); }
+        function previewImg(inp, id) { if(inp.files[0]) compressImg(inp.files[0], b => { tmpHealthB64=b; document.getElementById(id).style.backgroundImage=`url(${b})`; document.getElementById(id).classList.remove('hidden'); }); }
+        let tmpHealthB64 = null;
+        async function syncHealthTab() { document.getElementById('br-date').value = fmtDate(new Date()); document.getElementById('pc-date').value = fmtDate(new Date()); loadHealthWall(); }
+        async function syncBreastSlider(val) { await updateDaily('breast', parseInt(val)); showToast('痛感已同步至日历'); }
+        
+        async function saveHealthRec(mod) {
+            let rec = { category: mod, timestamp: Date.now(), img: tmpHealthB64 };
+            if(mod === 'breast') { 
+                rec.checkDate = document.getElementById('br-date').value; 
+                rec.reviewDate = document.getElementById('br-review').value; 
+                rec.cd = document.getElementById('br-cd').value;
+                rec.type = '乳腺检查'; if(!rec.reviewDate) return showToast('必须填写复查日期哦！'); 
+            } else {
+                rec.checkDate = document.getElementById('pc-date').value; 
+                rec.reviewDate = document.getElementById('pc-review').value; 
+                rec.cd = document.getElementById('pc-cd').value;
+                rec.type = document.getElementById('pcos-type').value; if(!rec.reviewDate) return showToast('必须填写复查日期哦！'); 
+                let d = {}; if(rec.type==='激素六项') { d.lh=document.getElementById('pc-lh').value; d.fsh=document.getElementById('pc-fsh').value; d.e2=document.getElementById('pc-e2').value; } else if(rec.type==='AMH') d.amh=document.getElementById('pc-amh').value; else if(rec.type==='B超') { d.en=document.getElementById('pc-bus-en').value; d.fol=document.getElementById('pc-bus-fol').value; } else if(rec.type==='糖耐') { d.glu0=document.getElementById('pc-glu0').value; d.ins0=document.getElementById('pc-ins0').value; } rec.data = d;
+            }
+            await DB.add('health2', rec); showToast('单据已稳妥收入档案'); tmpHealthB64=null; document.getElementById('br-img-prev').classList.add('hidden'); document.getElementById('pc-img-prev').classList.add('hidden'); loadHealthWall(); 
+        }
+        
+        async function loadHealthWall() {
+            let list = await DB.getAll('health2'); list.sort((a,b)=>b.timestamp-a.timestamp); 
+            let hBreast = ''; let hPcos = '';
+            list.forEach(i => { 
+                let imgH = i.img ? `<img src="${i.img}" class="w-16 h-16 object-cover rounded-lg filter blur-[4px] active:blur-none border-2 border-theme-ink shrink-0" onclick="this.classList.toggle('blur-[4px]')">` : `<div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-xs text-gray-400 shrink-0 whitespace-nowrap">无图</div>`; 
+                let dataH = ''; if(i.data) { if(i.type==='激素六项') dataH = `LH:${i.data.lh||'-'} FSH:${i.data.fsh||'-'}`; if(i.type==='AMH') dataH = `AMH:${i.data.amh||'-'}`; if(i.type==='B超') dataH = `内膜:${i.data.en||'-'} 卵泡:${i.data.fol||'-'}`; }
+                let cdStr = i.cd ? `<span class="bg-theme-mint/30 px-1 rounded ml-1 font-bold whitespace-nowrap">月经第${i.cd}天</span>` : '';
+                
+                let itemHTML = `<div class="card-soft p-3 flex gap-3 relative shadow-none border-2 border-gray-100 bg-white"><button onclick="DB.del('health2',${i.id});loadHealthWall()" class="absolute top-2 right-2 text-theme-red shrink-0"><svg class="w-5 h-5 text-theme-red shrink-0"><use href="#icon-trash"></use></svg></button>${imgH}<div class="flex-1 min-w-0 text-sm font-bold"><div class="text-base text-theme-ink border-b-2 border-theme-ink/10 pb-1 mb-1 flex items-center gap-1 text-theme-ink whitespace-nowrap">${i.type}${cdStr}</div><div class="whitespace-nowrap">检查: ${dispDate(i.checkDate)}</div><div class="text-theme-red whitespace-nowrap">复查: ${dispDate(i.reviewDate)}</div><div class="text-theme-ink/70 mt-1 truncate">${dataH}</div></div></div>`;
+                
+                if (i.category === 'breast' || i.type === '乳腺检查') {
+                    hBreast += itemHTML;
+                } else {
+                    hPcos += itemHTML;
+                }
+            }); 
+            document.getElementById('health-records-wall-breast').innerHTML = hBreast || '<div class="text-center text-gray-400 py-4 font-bold text-sm whitespace-nowrap">暂无乳腺单据记录</div>';
+            document.getElementById('health-records-wall-pcos').innerHTML = hPcos || '<div class="text-center text-gray-400 py-4 font-bold text-sm whitespace-nowrap">暂无多囊单据记录</div>';
+        }
+
+        /* ================= 6. 猫爪步数与全屏纯手绘特效 ================= */
+        function pickSport(t) { curSport = t==='custom'?document.getElementById('sp-cust').value:t; document.querySelectorAll('.sp-btn').forEach(b=>b.classList.remove('selected','border-pink-300')); if(t!=='custom'){document.getElementById(`sp-${t}`).classList.add('selected','border-pink-300'); document.getElementById('sp-cust').value='';} }
+        
+        function updatePawProgress() {
+            let steps = parseInt(document.getElementById('sp-steps').value) || 0;
+            let activePaws = Math.min(5, Math.floor(steps / 2000));
+            for(let i=1; i<=5; i++) {
+                let p = document.getElementById('paw-'+i);
+                if(i <= activePaws) { p.classList.add('text-theme-pink'); p.classList.remove('text-gray-300'); }
+                else { p.classList.remove('text-theme-pink'); p.classList.add('text-gray-300'); }
+            }
+            if(steps >= 10000 && !confettiFired) { confettiFired = true; triggerConfettiEffect(); }
+        }
+
+        function triggerConfettiEffect() {
+            const container = document.createElement('div'); container.className = 'fixed inset-0 pointer-events-none z-[99999] overflow-hidden';
+            const handDrawnIcons = ['#icon-cf-heart', '#icon-cf-star', '#icon-cf-flower', '#icon-cf-sparkle', '#icon-paw'];
+            for(let i=0; i<60; i++) {
+                let el = document.createElement('div'); 
+                let iconId = handDrawnIcons[Math.floor(Math.random() * handDrawnIcons.length)];
+                
+                el.className = 'confetti-flake w-7 h-7 flex items-center justify-center shrink-0';
+                if(iconId === '#icon-paw') el.classList.add('text-pink-300');
+                
+                el.innerHTML = `<svg class="w-full h-full shrink-0"><use href="${iconId}"></use></svg>`;
+                el.style.left = (Math.random() * 100) + 'vw'; 
+                el.style.animationDuration = (Math.random() * 2 + 3) + 's'; 
+                el.style.animationDelay = (Math.random() * 1) + 's';
+                container.appendChild(el);
+            }
+            document.body.appendChild(container); showToast('太棒啦！达成一万步！'); setTimeout(() => container.remove(), 5500);
+        }
+
+        async function submitSport() {
+            let steps = document.getElementById('sp-steps').value;
+            if(!curSport && !steps) return showToast('选个运动或输入步数呀'); 
+            
+            const targetDate = document.getElementById('sport-date').value || fmtDate(new Date());
+            let d = (await DB.get('daily', targetDate)) || {date: targetDate}; 
+            if(!d.sport) d.sport = []; 
+            if(curSport) { const dur = document.getElementById('sp-dur').value; if(!dur) return showToast('动了多久？'); d.sport.push({ type: curSport, dur: dur, cal: document.getElementById('sp-cal').value || 0 }); }
+            if(steps) { d.sport.push({ type: '步数', dur: steps+'步', cal: Math.floor(steps/30) }); }
+            await DB.put('daily', d); showToast(`汗水已凝结在日历上`); 
+            document.getElementById('sp-dur').value = ''; document.getElementById('sp-cal').value = ''; document.getElementById('sp-steps').value = ''; updatePawProgress();
+        }
+
+        async function renderChart() {
+            const y = currDate.getFullYear(), m = currDate.getMonth() + 1;
+            document.getElementById('month-name-display').textContent = `${y}/${String(m).padStart(2,'0')}`;
+            const allData = await DB.getAll('daily');
+            let sortedData = allData.filter(d => d.period).sort((a,b) => new Date(a.date) - new Date(b.date));
+            let periodStarts = [];
+            for(let i=0; i<sortedData.length; i++) { let cur = new Date(sortedData[i].date); if(i === 0) { periodStarts.push(cur); continue; } let prev = new Date(sortedData[i-1].date); let diff = (cur - prev) / (1000 * 60 * 60 * 24); if(diff > 5) periodStarts.push(cur); }
+            let cycles = []; for(let i=0; i<periodStarts.length-1; i++) { let diff = Math.round((periodStarts[i+1] - periodStarts[i]) / (1000 * 60 * 60 * 24)); cycles.push({ yyyyMm: fmtDate(periodStarts[i]).slice(0,7), length: diff }); }
+            let labels = []; let cycleDays = []; let sportMins = [];
+            for (let i = 5; i >= 0; i--) {
+                let d = new Date(y, currDate.getMonth() - i, 1); let mStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; labels.push(`${d.getMonth()+1}月`);
+                let cycleInMonth = cycles.find(c => c.yyyyMm === mStr); cycleDays.push(cycleInMonth ? cycleInMonth.length : null);
+                let monthData = allData.filter(x => x.date.startsWith(mStr)); let mSport = 0;
+                monthData.forEach(day => { if(day.sport) day.sport.forEach(s => { if(s.type!=='步数') mSport += parseInt(s.dur||0) }) }); sportMins.push(mSport);
+            }
+            if(chartObj) chartObj.destroy();
+            chartObj = new Chart(document.getElementById('chart-magic').getContext('2d'), { type: 'bar', data: { labels: labels, datasets: [ { type: 'line', label: '周期天数', data: cycleDays, borderColor: '#F43F5E', backgroundColor: 'white', borderWidth: 3, tension: 0.4, yAxisID: 'y1', pointRadius: 5, spanGaps: true }, { type: 'bar', label: '总运动(分)', data: sportMins, backgroundColor: '#D1FAE5', borderRadius: 6, yAxisID: 'y' } ] }, options: { responsive: true, maintainAspectRatio: false, scales: { y1: { type: 'linear', display: true, position: 'left', min: 20, max: 60, title: {display: true, text: '天数', font: {size: 10}} }, y: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: {display: true, text: '运动分钟', font: {size: 10}} } }, plugins: { legend: { position: 'bottom', labels: {font:{family: 'ZCOOL QingKe HuangYou'}} } } } });
+            const prefix = `${y}-${String(m).padStart(2,'0')}`; const curMonthData = allData.filter(d => d.date.startsWith(prefix));
+            let totDur = 0; let totCal = 0; let typeSum = {}; let dailyHTML = '';
+            curMonthData.sort((a,b)=> new Date(b.date) - new Date(a.date)).forEach(d => {
+                if(d.sport && d.sport.length > 0) {
+                    d.sport.forEach(s => {
+                        let isSteps = s.type === '步数';
+                        if(!isSteps) totDur += parseInt(s.dur); 
+                        totCal += parseInt(s.cal);
+                        if(!typeSum[s.type]) typeSum[s.type] = {dur: 0, cal: 0};
+                        if(!isSteps) typeSum[s.type].dur += parseInt(s.dur);
+                        typeSum[s.type].cal += parseInt(s.cal);
+                        let miniId = isSteps ? 'icon-paw' : getMiniSportIconId(s.type);
+                        let durStr = isSteps ? s.dur : s.dur+'m';
+                        dailyHTML += `<li class="flex justify-between items-center bg-gray-50 p-2 rounded-xl border border-gray-200"><div class="flex items-center gap-2 text-theme-ink shrink-0 whitespace-nowrap"><svg class="w-5 h-5 shrink-0"><use href="#${miniId}"></use></svg><span>${s.type} <span class="text-xs font-normal text-theme-ink/50 ml-1">(${dispDate(d.date).slice(5)})</span></span></div><span class="text-theme-red whitespace-nowrap shrink-0">${durStr} / ${s.cal}k</span></li>`;
+                    });
+                }
+            });
+            document.getElementById('sp-tot').textContent = `${totDur}分钟 / ${totCal}千卡`;
+            document.getElementById('sport-list').innerHTML = dailyHTML || '<li class="text-center text-theme-ink/50 py-4 whitespace-nowrap">本月还没流汗呢~</li>';
+            let typeHTML = '';
+            for (let t in typeSum) { 
+                let isSteps = t === '步数'; let miniId = isSteps ? 'icon-paw' : getMiniSportIconId(t);
+                let durStr = isSteps ? '计步' : typeSum[t].dur+'m';
+                typeHTML += `<div class="bg-theme-mint/30 p-2 rounded-xl border border-gray-200 flex flex-col items-center justify-center text-theme-ink"><div class="flex items-center gap-1 whitespace-nowrap"><svg class="w-4 h-4 shrink-0"><use href="#${miniId}"></use></svg>${t}</div><div class="text-[11px] mt-1 text-theme-ink/70 font-bold whitespace-nowrap">${durStr} / ${typeSum[t].cal}k</div></div>`; 
+            }
+            document.getElementById('sport-type-summary').innerHTML = typeHTML || '<div class="col-span-2 text-center text-xs text-theme-ink/50 whitespace-nowrap">无数据</div>';
+        }
+
+        window.onload = async () => { await DB.init(); switchTab('calendar'); };
+    </script>
+</body>
+</html>
